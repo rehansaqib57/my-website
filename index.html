@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexa Advisory | Operational Scalability</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: {
+                800: '#1E3A8A',
+                900: '#0F172A',
+              },
+              slate: {
+                800: '#1E293B',
+                500: '#64748B',
+              },
+              gold: {
+                400: '#FACC15',
+                500: '#D4AF37',
+                600: '#B49428',
+              },
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+            },
+          },
+        },
+      }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #F1F5F9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #94A3B8;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #64748B;
+      }
+      /* Scroll Padding for Fixed Header */
+      html {
+        scroll-padding-top: 85px;
+      }
+      
+      /* Animation classes */
+      .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+      
+      .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      
+      .pulse-gold {
+        animation: pulse-gold 2s infinite;
+      }
+      
+      @keyframes pulse-gold {
+        0% {
+          box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+        }
+      }
+      
+      .bounce-gentle {
+        animation: bounce-gentle 3s infinite;
+      }
+      
+      @keyframes bounce-gentle {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      
+      .float-slow {
+        animation: float-slow 5s ease-in-out infinite;
+      }
+      
+      @keyframes float-slow {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(15px);
+        }
+      }
+      
+      .progress-bar {
+        width: 0%;
+        transition: width 1.5s ease-in-out;
+      }
+      
+      .dropdown-enter {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      
+      .dropdown-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.2s, transform 0.2s;
+      }
+      
+      .dropdown-exit {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .dropdown-exit-active {
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.15s, transform 0.15s;
+      }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-navy-800 selection:text-white">
+    <!-- Header -->
+    <header id="header" class="fixed top-0 w-full z-50 transition-all duration-300 py-5">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="flex items-center gap-3" onclick="smoothScrollTo(event, '#')">
+                <svg viewBox="0 0 100 100" class="w-10 h-10 shadow-sm" xmlns="http://www.w3.org/2000/svg" aria-label="Nexa Advisory Logo">
+                    <rect width="100" height="100" rx="22" fill="#1E3A8A" />
+                    <path 
+                        d="M32 72V28L68 72" 
+                        stroke="#F1F5F9" 
+                        stroke-width="11" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        fill="none"
+                    />
+                    <path 
+                        d="M68 72V28" 
+                        stroke="#64748B" 
+                        stroke-width="11" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                    />
+                </svg>
+                <span class="text-2xl font-serif font-bold text-navy-900 md:text-white transition-colors">Nexa Advisory</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="#methodology" class="text-sm font-medium text-slate-200 hover:text-gold-500 transition-colors" onclick="smoothScrollTo(event, '#methodology')">Methodology</a>
+                
+                <div class="relative group" onmouseenter="showDropdown('services')" onmouseleave="hideDropdown('services')">
+                    <a href="#services" class="text-sm font-medium text-slate-200 hover:text-gold-500 transition-colors flex items-center gap-1" onclick="smoothScrollTo(event, '#services')">
+                        Services
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </a>
+                    
+                    <!-- Desktop Dropdown -->
+                    <div id="services-dropdown" class="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-slate-100 py-2 overflow-hidden hidden">
+                        <a href="#audit" onclick="smoothScrollTo(event, '#audit')" class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 hover:text-navy-800 border-b border-slate-50">Operations Audit</a>
+                        <a href="#execution" onclick="smoothScrollTo(event, '#execution')" class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 hover:text-navy-800 border-b border-slate-50">Workflow Automation</a>
+                        <a href="#monthly-retainer" onclick="smoothScrollTo(event, '#monthly-retainer')" class="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 hover:text-navy-800">Monthly Retainer</a>
+                    </div>
+                </div>
+                
+                <a href="#case-studies" class="text-sm font-medium text-slate-200 hover:text-gold-500 transition-colors" onclick="smoothScrollTo(event, '#case-studies')">Case Studies</a>
+                
+                <button class="inline-flex items-center justify-center px-5 py-2 text-xs font-medium transition-all duration-300 rounded-sm bg-gold-500 text-white hover:bg-gold-600 shadow-lg shadow-gold-500/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 uppercase tracking-wider" onclick="smoothScrollTo(event, '#booking')">
+                    Book Consultation
+                </button>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden text-navy-800">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Nav Overlay -->
+        <div id="mobile-nav" class="absolute top-full left-0 w-full bg-white shadow-lg py-6 px-6 md:hidden border-t border-slate-100 hidden max-h-[80vh] overflow-y-auto">
+            <div class="flex flex-col gap-4">
+                <a href="#methodology" class="text-lg font-medium text-slate-700 hover:text-navy-800" onclick="closeMobileMenu(); smoothScrollTo(event, '#methodology')">Methodology</a>
+                
+                <div>
+                    <div class="text-lg font-medium text-slate-700 mb-2">Services</div>
+                    <div class="pl-4 flex flex-col gap-3 border-l-2 border-slate-100 ml-1">
+                        <a href="#audit" onclick="closeMobileMenu(); smoothScrollTo(event, '#audit')" class="text-sm text-slate-600 hover:text-navy-800">Operations Audit</a>
+                        <a href="#execution" onclick="closeMobileMenu(); smoothScrollTo(event, '#execution')" class="text-sm text-slate-600 hover:text-navy-800">Workflow Automation</a>
+                        <a href="#monthly-retainer" onclick="closeMobileMenu(); smoothScrollTo(event, '#monthly-retainer')" class="text-sm text-slate-600 hover:text-navy-800">Monthly Retainer</a>
+                    </div>
+                </div>
+                
+                <a href="#case-studies" class="text-lg font-medium text-slate-700 hover:text-navy-800" onclick="closeMobileMenu(); smoothScrollTo(event, '#case-studies')">Case Studies</a>
+                
+                <button class="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-medium transition-all duration-300 rounded-sm bg-navy-800 text-white hover:bg-navy-900 shadow-lg shadow-navy-800/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-800 mt-2" onclick="closeMobileMenu(); smoothScrollTo(event, '#booking')">
+                    Book Consultation
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-20 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
+        <!-- Background Decor -->
+        <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-100/20 to-transparent pointer-events-none"></div>
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-gold-400/10 rounded-full blur-3xl"></div>
+
+        <div class="container mx-auto px-6 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+            <div class="fade-in-up">
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-navy-800/5 border border-navy-800/10 rounded-full text-navy-800 text-sm font-medium mb-6">
+                    <span class="w-2 h-2 rounded-full bg-gold-500 pulse-gold"></span>
+                    Accepting New Portfolios (50-300 Units)
+                </div>
+                
+                <h1 class="text-4xl md:text-6xl font-serif font-bold text-navy-900 leading-tight mb-6">
+                    Stop Operational Chaos. <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-navy-800 to-blue-600">
+                        Start Scaling Efficiently.
+                    </span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-lg">
+                    We transform overwhelmed multifamily operators into streamlined, automated enterprises—without adding headcount.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-300 rounded-sm bg-navy-800 text-white hover:bg-navy-900 shadow-xl shadow-navy-900/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-800" onclick="smoothScrollTo(event, '#booking')">
+                        Book Your Consultation <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                    </button>
+                    <button class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-300 rounded-sm bg-white text-navy-800 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200" onclick="smoothScrollTo(event, '#case-studies')">
+                        View Case Studies
+                    </button>
+                </div>
+
+                <div class="mt-10 flex items-center gap-4 text-sm text-slate-500">
+                    <div class="flex -space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs font-bold text-slate-500">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <p><span class="font-bold text-navy-800">50+</span> Portfolios Analyzed</p>
+                </div>
+            </div>
+
+            <div class="relative hidden md:block h-[600px]">
+                <div class="relative w-full h-full">
+                    <!-- Central "System" Card -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-white rounded-xl shadow-2xl border border-slate-100 p-6 z-20">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+                            <span class="font-serif font-bold text-navy-900">Automation Core</span>
+                            <span class="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">Active</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-500 flex items-center gap-2"><i data-lucide="file-check" class="w-4 h-4"></i> Leases</span>
+                                <span class="font-mono text-navy-800">Auto-Sign</span>
+                            </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-500 flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4"></i> Maintenance</span>
+                                <span class="font-mono text-navy-800">Dispatched</span>
+                            </div>
+                            <div class="mt-4 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <div id="efficiency-bar" class="h-full bg-gold-500 progress-bar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-right text-slate-400 mt-1">Efficiency: <span id="efficiency-text">0%</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Floating Metrics -->
+                    <div class="absolute top-20 right-10 bg-navy-800 text-white p-4 rounded-lg shadow-xl z-30 max-w-[160px] bounce-gentle">
+                        <p class="text-xs text-slate-300 uppercase tracking-wider">Hours Saved</p>
+                        <p class="text-3xl font-bold text-gold-400">18 hrs</p>
+                        <p class="text-xs text-slate-300">per week/manager</p>
+                    </div>
+
+                    <div class="absolute bottom-20 left-0 bg-white p-4 rounded-lg shadow-xl border-l-4 border-green-500 z-30 float-slow">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-green-100 rounded-full text-green-600">
+                                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">Vacancy Cost</p>
+                                <p class="text-xs text-slate-500">Reduced by 42%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Background elements simulating flow -->
+                    <svg class="absolute inset-0 w-full h-full z-0 opacity-30" viewBox="0 0 400 400">
+                        <path d="M50,350 Q200,200 350,50" stroke="#1E3A8A" stroke-width="2" fill="none" stroke-dasharray="10,10" />
+                        <path d="M50,50 Q200,200 350,350" stroke="#D4AF37" stroke-width="2" fill="none" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Section -->
+    <section class="py-16 border-b border-slate-200 bg-white">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Trusted By Industry Leaders</p>
+            <div class="flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="text-xl font-serif font-bold text-slate-800 flex items-center gap-2">
+                    <div class="w-6 h-6 bg-slate-300 rounded-sm"></div> Apex Properties
+                </div>
+                <div class="text-xl font-serif font-bold text-slate-800 flex items-center gap-2">
+                    <div class="w-6 h-6 bg-slate-300 rounded-sm"></div> Urban Living
+                </div>
+                <div class="text-xl font-serif font-bold text-slate-800 flex items-center gap-2">
+                    <div class="w-6 h-6 bg-slate-300 rounded-sm"></div> Metro Portfolio
+                </div>
+                <div class="text-xl font-serif font-bold text-slate-800 flex items-center gap-2">
+                    <div class="w-6 h-6 bg-slate-300 rounded-sm"></div> Summit Mgmt
+                </div>
+                <div class="text-xl font-serif font-bold text-slate-800 flex items-center gap-2">
+                    <div class="w-6 h-6 bg-slate-300 rounded-sm"></div> Keystone Groups
+                </div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 mt-16 max-w-4xl mx-auto">
+                <div class="flex flex-col items-center">
+                    <div class="flex text-gold-500 mb-2">
+                        <i data-lucide="star" fill="currentColor"></i>
+                        <i data-lucide="star" fill="currentColor"></i>
+                        <i data-lucide="star" fill="currentColor"></i>
+                        <i data-lucide="star" fill="currentColor"></i>
+                        <i data-lucide="star" fill="currentColor"></i>
+                    </div>
+                    <p class="font-bold text-navy-900">4.9/5 Satisfaction</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i data-lucide="shield-check" class="w-8 h-8 text-navy-800 mb-2"></i>
+                    <p class="font-bold text-navy-900">92% Implementation Success</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <i data-lucide="users" class="w-8 h-8 text-navy-800 mb-2"></i>
+                    <p class="font-bold text-navy-900">50+ Portfolios</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-24 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4 text-navy-900">What Our Clients Say</h2>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto text-slate-600">Hear from the property leaders who have scaled with us.</p>
+                <div class="h-1 w-20 bg-gold-500 mt-6 mx-auto"></div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 relative hover-lift">
+                    <div class="absolute top-6 right-6 text-slate-200">
+                        <i data-lucide="quote" class="w-10 h-10 opacity-50"></i>
+                    </div>
+                    <div class="text-gold-500 mb-4 flex">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-slate-600 mb-6 italic relative z-10 leading-relaxed">"Nexa Advisory completely transformed our operational workflow. We reduced vacancy rates by 40% within the first quarter."</p>
+                    <div class="flex items-center gap-4 mt-auto pt-4 border-t border-slate-50">
+                        <div class="w-10 h-10 bg-navy-800 rounded-full flex items-center justify-center text-white font-bold shrink-0">
+                            S
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-navy-900 text-sm">Sarah Jenkins</h4>
+                            <p class="text-xs text-slate-500">VP of Operations, Apex Properties</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 relative hover-lift">
+                    <div class="absolute top-6 right-6 text-slate-200">
+                        <i data-lucide="quote" class="w-10 h-10 opacity-50"></i>
+                    </div>
+                    <div class="text-gold-500 mb-4 flex">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-slate-600 mb-6 italic relative z-10 leading-relaxed">"The automation audit was an eye-opener. We didn't realize how much time we were wasting on manual data entry until Nexa showed us."</p>
+                    <div class="flex items-center gap-4 mt-auto pt-4 border-t border-slate-50">
+                        <div class="w-10 h-10 bg-navy-800 rounded-full flex items-center justify-center text-white font-bold shrink-0">
+                            M
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-navy-900 text-sm">Michael Ross</h4>
+                            <p class="text-xs text-slate-500">Portfolio Manager, Urban Living</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100 relative hover-lift">
+                    <div class="absolute top-6 right-6 text-slate-200">
+                        <i data-lucide="quote" class="w-10 h-10 opacity-50"></i>
+                    </div>
+                    <div class="text-gold-500 mb-4 flex">
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+                    </div>
+                    <p class="text-slate-600 mb-6 italic relative z-10 leading-relaxed">"Professional, data-driven, and highly effective. Their team felt like an extension of ours during the implementation phase."</p>
+                    <div class="flex items-center gap-4 mt-auto pt-4 border-t border-slate-50">
+                        <div class="w-10 h-10 bg-navy-800 rounded-full flex items-center justify-center text-white font-bold shrink-0">
+                            E
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-navy-900 text-sm">Elena Rodriguez</h4>
+                            <p class="text-xs text-slate-500">Director of Asset Management, Metro Portfolio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Audit Framework -->
+    <section id="methodology" class="py-24 bg-white relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4 text-navy-900">Our 8-Section Audit Framework</h2>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto text-slate-600">We identify the chaos, build the system, and verify the profit through a comprehensive diagnostic analysis.</p>
+                <div class="h-1 w-20 bg-gold-500 mt-6 mx-auto"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        1
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Operations Scorecard (0-10 Baseline)</h3>
+                </div>
+                
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        2
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Workflow Process Mapping</h3>
+                </div>
+                
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        3
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Tech Stack Utilization Review</h3>
+                </div>
+                
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        4
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Maintenance Operations Efficiency</h3>
+                </div>
+                
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        5
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Tenant Communication Load Analysis</h3>
+                </div>
+                
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        6
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Leasing & Turnover Workflow Review</h3>
+                </div>
+                
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        7
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Vendor Management Efficiency</h3>
+                </div>
+                
+                <div class="p-6 bg-slate-50 rounded-xl border border-slate-100 hover:border-gold-500/30 hover:shadow-lg transition-all duration-300 flex flex-col h-full hover-lift">
+                    <div class="w-10 h-10 bg-white rounded-full shadow-sm text-navy-800 font-bold flex items-center justify-center mb-4 border border-slate-100">
+                        8
+                    </div>
+                    <h3 class="text-lg font-semibold text-navy-900">Automation Opportunity Matrix + 90-Day Roadmap</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="py-24 bg-navy-900 text-white overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="mb-12 text-left">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4 text-white">Elite Operational Consulting</h2>
+                <p class="text-lg md:text-xl max-w-2xl text-slate-300">Designed for portfolios ready to scale beyond manual limitations.</p>
+                <div class="h-1 w-20 bg-gold-500 mt-6"></div>
+            </div>
+
+            <div class="space-y-24">
+                <!-- Service 1: Audit -->
+                <div id="audit" class="grid md:grid-cols-2 gap-12 items-center scroll-mt-32">
+                    <div class="order-2 md:order-1">
+                        <div class="bg-slate-800 p-2 rounded-xl shadow-2xl transform -rotate-1">
+                            <div class="bg-slate-900 p-6 rounded-lg border border-slate-700">
+                                <h4 class="text-gold-500 font-mono text-xs uppercase tracking-widest mb-4">Audit Output Example</h4>
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                        <span class="text-sm text-slate-400">Process: Lease Renewal</span>
+                                        <span class="text-sm text-red-400">Manual (4hrs/wk)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                        <span class="text-sm text-slate-400">Process: Maintenance Triage</span>
+                                        <span class="text-sm text-red-400">Manual (12hrs/wk)</span>
+                                    </div>
+                                    <div class="mt-4 bg-green-900/20 border border-green-900/50 p-3 rounded">
+                                        <p class="text-green-400 text-sm font-semibold">Recoverable: $25,400/yr</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <div class="inline-block px-3 py-1 bg-gold-500/10 rounded-full text-gold-500 text-xs font-bold uppercase tracking-widest mb-4">
+                            Diagnostic
+                        </div>
+                        <h3 class="text-3xl font-serif font-bold mb-4">
+                            Operations Automation Audit (Diagnostic)
+                        </h3>
+                        <p class="text-slate-300 mb-6 text-lg">
+                            A full operational analysis across maintenance, leasing, communication, turnover, vendors, and tech stack. Delivers a 0–10 efficiency score, bottleneck visibility, and a 90-day automation roadmap.
+                        </p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-gold-500 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Identify 12-18+ weekly hours of recoverable time</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-gold-500 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Pinpoint $18k-$25k+ in hidden annual costs</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-gold-500 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Quantified ROI Projections (Base vs Aggressive)</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-gold-500 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">90-Day Implementation Roadmap</span>
+                            </li>
+                        </ul>
+                        <button class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-300 rounded-sm bg-gold-500 text-white hover:bg-gold-600 shadow-lg shadow-gold-500/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500" onclick="smoothScrollTo(event, '#booking')">
+                            Book Audit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Service 2: Execution -->
+                <div id="execution" class="grid md:grid-cols-2 gap-12 items-center scroll-mt-32">
+                    <div>
+                        <div class="inline-block px-3 py-1 bg-blue-500/10 rounded-full text-blue-400 text-xs font-bold uppercase tracking-widest mb-4">
+                            Execution
+                        </div>
+                        <h3 class="text-3xl font-serif font-bold mb-4">
+                            Workflow Automation Execution (Implementation)
+                        </h3>
+                        <p class="text-slate-300 mb-6 text-lg">
+                            We build and deploy the automations your team needs — integrating CRM, accounting, leasing, and maintenance systems to eliminate manual work and accelerate operations.
+                        </p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">System Integration & Tool Consolidation</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Workflow Automation Deployment</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Team Training & Change Management</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Performance Monitoring & Optimization</span>
+                            </li>
+                        </ul>
+                        <button class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-300 rounded-sm bg-transparent border border-white/30 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white" onclick="smoothScrollTo(event, '#booking')">
+                            Book Implementation
+                        </button>
+                    </div>
+                    <div>
+                        <div class="bg-gradient-to-br from-blue-600 to-navy-800 p-1 rounded-xl shadow-2xl transform rotate-1">
+                            <div class="bg-slate-900 p-6 rounded-lg relative overflow-hidden h-64 flex items-center justify-center">
+                                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                                <div class="text-center z-10">
+                                    <div class="inline-block p-4 bg-blue-500/20 rounded-full mb-4 pulse-gold">
+                                        <i data-lucide="settings" class="w-12 h-12 text-blue-400"></i>
+                                    </div>
+                                    <p class="text-white font-mono">Automating Workflows...</p>
+                                    <p class="text-xs text-blue-300 mt-2">Connecting CRM ↔ Accounting ↔ Maintenance</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 3: Retainer -->
+                <div id="monthly-retainer" class="grid md:grid-cols-2 gap-12 items-center scroll-mt-32">
+                    <div class="order-2 md:order-1">
+                        <div class="bg-slate-800 p-2 rounded-xl shadow-2xl transform -rotate-1">
+                            <div class="bg-slate-900 p-6 rounded-lg border border-slate-700 flex flex-col justify-center h-full">
+                                <div class="flex items-center gap-4 mb-6">
+                                    <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-gold-500 font-bold text-xl border border-slate-700">
+                                        <i data-lucide="activity" class="w-6 h-6"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-bold">Performance Monitor</p>
+                                        <p class="text-xs text-slate-400">Real-time KPI Tracking</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex justify-between text-xs text-slate-400">
+                                        <span>System Health</span>
+                                        <span class="text-green-400">99.9%</span>
+                                    </div>
+                                    <div class="h-1.5 bg-slate-800 rounded w-full overflow-hidden">
+                                        <div class="h-full bg-green-500 w-[99%]"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-slate-400">
+                                        <span>Response Time</span>
+                                        <span class="text-green-400">-45%</span>
+                                    </div>
+                                    <div class="h-1.5 bg-slate-800 rounded w-full overflow-hidden">
+                                        <div class="h-full bg-green-500 w-[65%]"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
+                                    <span class="text-xs text-slate-500">Active Advisory</span>
+                                    <span class="text-gold-500 text-sm font-bold">Monthly Review</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <div class="inline-block px-3 py-1 bg-slate-700 rounded-full text-slate-300 text-xs font-bold uppercase tracking-widest mb-4">
+                            Ongoing Support
+                        </div>
+                        <h3 class="text-3xl font-serif font-bold mb-4">
+                            Monthly Operational Retainer
+                        </h3>
+                        <h4 class="text-xl text-slate-300 mb-4 font-light">
+                            Ongoing optimization, advisory & performance monitoring
+                        </h4>
+                        <p class="text-slate-400 mb-6">
+                            Continuous optimization for operators who want expert oversight without hiring full-time leadership. Includes monthly reviews, workflow tuning, KPI tracking, troubleshooting, and operational advisory.
+                        </p>
+                        <ul class="space-y-3 mb-8">
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-slate-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Monthly performance reviews</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-slate-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Workflow and automation tuning</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-slate-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">Team capacity optimization</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-slate-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">KPI + SLA monitoring</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-slate-400 shrink-0 mt-1"></i>
+                                <span class="text-slate-200">On-demand operational advisory</span>
+                            </li>
+                        </ul>
+                        <button class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium transition-all duration-300 rounded-sm bg-transparent border border-white/30 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white" onclick="smoothScrollTo(event, '#booking')">
+                            Book Consultation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Case Studies -->
+    <section id="case-studies" class="py-24 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4 text-navy-900">Transforming Operations, Delivering Results</h2>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto text-slate-600">Real results from portfolios just like yours.</p>
+                <div class="h-1 w-20 bg-gold-500 mt-6 mx-auto"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-gold-500 flex flex-col hover-lift">
+                    <div class="p-8 flex-grow">
+                        <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">175-Unit Portfolio</div>
+                        <h3 class="text-2xl font-serif font-bold text-navy-900 mb-6 leading-tight">From Chaos to Control: 22 Hours Weekly Saved</h3>
+                        
+                        <div class="grid grid-cols-2 gap-y-6 gap-x-4 border-t border-slate-100 pt-6">
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">7d → 2d</div>
+                                <div class="text-xs text-slate-500 mt-1">Maintenance Response</div>
+                            </div>
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">-70%</div>
+                                <div class="text-xs text-slate-500 mt-1">Tenant Inquiries</div>
+                            </div>
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">21d → 9d</div>
+                                <div class="text-xs text-slate-500 mt-1">Vacancy Turnover</div>
+                            </div>
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">$28,500</div>
+                                <div class="text-xs text-slate-500 mt-1">Annual Savings</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-8 py-4 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-sm font-medium text-slate-600">Read full case study</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gold-500"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border-t-4 border-gold-500 flex flex-col hover-lift">
+                    <div class="p-8 flex-grow">
+                        <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">280-Unit Operation</div>
+                        <h3 class="text-2xl font-serif font-bold text-navy-900 mb-6 leading-tight">Scaling Without Headcount: $47k Savings</h3>
+                        
+                        <div class="grid grid-cols-2 gap-y-6 gap-x-4 border-t border-slate-100 pt-6">
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">+35%</div>
+                                <div class="text-xs text-slate-500 mt-1">Capacity Utilization</div>
+                            </div>
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">67%</div>
+                                <div class="text-xs text-slate-500 mt-1">Error Reduction</div>
+                            </div>
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">4.2x</div>
+                                <div class="text-xs text-slate-500 mt-1">ROI on Auto</div>
+                            </div>
+                            <div>
+                                <div class="text-lg md:text-xl font-bold text-navy-800">$47,000</div>
+                                <div class="text-xs text-slate-500 mt-1">Annual Savings</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 px-8 py-4 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-sm font-medium text-slate-600">Read full case study</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-gold-500"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="py-24 bg-navy-900 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold mb-4 text-white">Book Your Consultation</h2>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto text-slate-300">Choose the service you need and schedule a session with our team.</p>
+                <div class="h-1 w-20 bg-gold-500 mt-6 mx-auto"></div>
+            </div>
+
+            <div class="max-w-6xl mx-auto">
+                <!-- Service Selection - Now 3 columns -->
+                <div class="grid md:grid-cols-3 gap-4 lg:gap-6 mb-12">
+                    <div id="audit-card" class="cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-white border-gold-500 shadow-xl transform -translate-y-1" onclick="selectService('Operations Automation Audit (Diagnostic)')">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 rounded-full bg-gold-100 text-gold-600">
+                                <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+                            </div>
+                            <i data-lucide="check-circle" class="text-gold-500 w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 leading-tight text-navy-900">
+                            Operations Audit (Diagnostic)
+                        </h3>
+                        <p class="text-xs leading-relaxed text-slate-600">
+                            Identify inefficiencies, uncover hidden hours, and get a 90-day roadmap.
+                        </p>
+                    </div>
+
+                    <div id="execution-card" class="cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-slate-800/50 border-slate-700 hover:border-slate-500 text-slate-300" onclick="selectService('Workflow Automation Execution (Implementation)')">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 rounded-full bg-slate-700 text-slate-400">
+                                <i data-lucide="settings" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 leading-tight text-white">
+                            Workflow Automation Execution
+                        </h3>
+                        <p class="text-xs leading-relaxed text-slate-400">
+                            Automate leasing, maintenance, communications, and internal processes.
+                        </p>
+                    </div>
+
+                    <div id="retainer-card" class="cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-slate-800/50 border-slate-700 hover:border-slate-500 text-slate-300" onclick="selectService('Monthly Operational Retainer (Ongoing Support)')">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 rounded-full bg-slate-700 text-slate-400">
+                                <i data-lucide="activity" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 leading-tight text-white">
+                            Monthly Operational Retainer
+                        </h3>
+                        <p class="text-xs leading-relaxed text-slate-400">
+                            Ongoing optimization, advisory & performance monitoring.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+                    <form id="booking-form" action="https://formsubmit.co/nexa.advisory9@gmail.com" method="POST" class="space-y-6">
+                        <!-- FormSubmit Configurations -->
+                        <input type="hidden" name="_captcha" value="false" />
+                        <input type="hidden" name="_template" value="table" />
+                        <input type="hidden" name="_autoresponse" value="Thank you for booking your consultation with Nexa Advisory. Our team will reach out shortly." />
+                        <input type="hidden" name="_next" value="thank-you.html" />
+                        <!-- Hidden input to carry the visual selection payload as primary data -->
+                        <input type="hidden" id="selected-service" name="Selected Visual Option" value="Operations Automation Audit (Diagnostic)" />
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="name" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Full Name</label>
+                                <input 
+                                    id="name"
+                                    required 
+                                    name="Full Name" 
+                                    class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none" 
+                                    placeholder="John Doe" 
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <label for="email" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Work Email</label>
+                                <input 
+                                    id="email"
+                                    required 
+                                    type="email" 
+                                    name="Work Email" 
+                                    class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none" 
+                                    placeholder="john@company.com" 
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="company" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Company Name</label>
+                                <input 
+                                    id="company"
+                                    required
+                                    name="Company Name" 
+                                    class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none" 
+                                    placeholder="Acme Property Management" 
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <label for="portfolio" class="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center">
+                                    Portfolio Size
+                                    <div class="relative inline-flex items-center ml-1.5 tooltip-container">
+                                        <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 hover:text-navy-800 cursor-help transition-colors"></i>
+                                        <div class="tooltip-content absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2.5 bg-navy-900 text-white text-xs leading-tight rounded-md shadow-xl z-50 text-center hidden">
+                                            Total units currently under management across all properties.
+                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-navy-900"></div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <div class="relative">
+                                    <select 
+                                        id="portfolio"
+                                        required 
+                                        name="Portfolio Size" 
+                                        class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none bg-white appearance-none text-slate-700 cursor-pointer"
+                                    >
+                                        <option value="">Select Size...</option>
+                                        <option value="50-100 units">50–100 units</option>
+                                        <option value="100-200 units">100–200 units</option>
+                                        <option value="200-300 units">200–300 units</option>
+                                        <option value="300+ units">300+ units</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="teamSize" class="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center">
+                                    Team Size
+                                    <div class="relative inline-flex items-center ml-1.5 tooltip-container">
+                                        <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 hover:text-navy-800 cursor-help transition-colors"></i>
+                                        <div class="tooltip-content absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2.5 bg-navy-900 text-white text-xs leading-tight rounded-md shadow-xl z-50 text-center hidden">
+                                            Number of full-time employees in your operations team.
+                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-navy-900"></div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <input 
+                                    id="teamSize"
+                                    name="Team Size"
+                                    class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none" 
+                                    placeholder="e.g. 5" 
+                                />
+                            </div>
+                            <div class="space-y-2">
+                                <label for="service" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Select Your Service</label>
+                                <div class="relative">
+                                    <select 
+                                        id="service"
+                                        required 
+                                        name="Select Your Service" 
+                                        class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none bg-white appearance-none text-slate-700 cursor-pointer"
+                                    >
+                                        <option value="Operations Automation Audit (Diagnostic)">Operations Automation Audit (Diagnostic)</option>
+                                        <option value="Workflow Automation Execution (Implementation)">Workflow Automation Execution (Implementation)</option>
+                                        <option value="Monthly Operational Retainer (Ongoing Support)">Monthly Operational Retainer (Ongoing Support)</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="challenge" class="text-xs font-bold text-slate-500 uppercase tracking-wide flex items-center">
+                                Biggest Operational Challenge
+                                <div class="relative inline-flex items-center ml-1.5 tooltip-container">
+                                    <i data-lucide="info" class="w-3.5 h-3.5 text-slate-400 hover:text-navy-800 cursor-help transition-colors"></i>
+                                    <div class="tooltip-content absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 p-2.5 bg-navy-900 text-white text-xs leading-tight rounded-md shadow-xl z-50 text-center hidden">
+                                        Briefly describe your main bottlenecks or what you hope to solve.
+                                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-navy-900"></div>
+                                    </div>
+                                </div>
+                            </label>
+                            <textarea 
+                                id="challenge"
+                                required
+                                name="Biggest Operational Challenge" 
+                                rows="3"
+                                class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none resize-none" 
+                                placeholder="Describe your main bottlenecks..." 
+                            ></textarea>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="time" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Preferred Meeting Time</label>
+                            <div class="relative">
+                                <select 
+                                    id="time"
+                                    name="Preferred Meeting Time" 
+                                    class="w-full border border-slate-300 rounded-sm px-4 py-3 text-sm focus:border-navy-800 focus:ring-1 focus:ring-navy-800 outline-none bg-white appearance-none text-slate-700 cursor-pointer"
+                                >
+                                    <option value="This Week">This Week</option>
+                                    <option value="Within 7 Days">Within 7 Days</option>
+                                    <option value="ASAP">ASAP</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="inline-flex items-center justify-center w-full px-6 py-4 text-base font-medium transition-all duration-300 rounded-sm bg-navy-800 text-white hover:bg-navy-900 shadow-xl shadow-navy-900/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-800 mt-4">
+                            Book My Consultation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy-900 text-white border-t border-slate-800 pt-16 pb-8">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <a 
+                        href="#" 
+                        class="flex items-center gap-3 mb-6"
+                        onclick="smoothScrollTo(event, '#')"
+                    >
+                        <svg viewBox="0 0 100 100" class="w-10 h-10 shadow-sm" xmlns="http://www.w3.org/2000/svg" aria-label="Nexa Advisory Logo">
+                            <rect width="100" height="100" rx="22" fill="#1E3A8A" />
+                            <path 
+                                d="M32 72V28L68 72" 
+                                stroke="#F1F5F9" 
+                                stroke-width="11" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round" 
+                                fill="none"
+                            />
+                            <path 
+                                d="M68 72V28" 
+                                stroke="#64748B" 
+                                stroke-width="11" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round" 
+                            />
+                        </svg>
+                        <span class="text-2xl font-serif font-bold text-white">Nexa Advisory</span>
+                    </a>
+                    <p class="text-slate-400 max-w-sm mb-6">
+                        Transforming chaotic property operations into streamlined, scalable enterprises through data-driven automation.
+                    </p>
+                    <div class="flex gap-4">
+                        <!-- Socials placeholders -->
+                        <div class="w-10 h-10 rounded-full bg-slate-800 hover:bg-gold-500 transition-colors cursor-pointer"></div>
+                        <div class="w-10 h-10 rounded-full bg-slate-800 hover:bg-gold-500 transition-colors cursor-pointer"></div>
+                        <div class="w-10 h-10 rounded-full bg-slate-800 hover:bg-gold-500 transition-colors cursor-pointer"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Services</h4>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li><a href="#" class="hover:text-gold-500">Operations Audit</a></li>
+                        <li><a href="#" class="hover:text-gold-500">Workflow Automation</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-slate-400 text-sm">
+                        <li>nexa.advisory9@gmail.com</li>
+                        <li class="pt-4">
+                            <a href="mailto:nexa.advisory9@gmail.com" class="inline-flex items-center justify-center py-2 px-4 text-xs font-medium transition-all duration-300 rounded-sm bg-transparent border border-white/30 text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">
+                                Contact Support
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
+                <p>&copy; <span id="current-year"></span> Nexa Advisory. All rights reserved.</p>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sticky Mobile CTA -->
+    <div class="fixed bottom-0 left-0 w-full p-4 bg-white border-t border-slate-200 md:hidden z-40">
+        <button class="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-medium transition-all duration-300 rounded-sm bg-navy-800 text-white hover:bg-navy-900 shadow-lg shadow-navy-800/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-800" onclick="smoothScrollTo(event, '#booking')">
+            Book Consultation
+        </button>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Smooth scrolling function
+        function smoothScrollTo(e, href) {
+            if (e) e.preventDefault();
+            const targetId = href.replace('#', '');
+            if (!targetId) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+            const element = document.getElementById(targetId);
+            if (element) {
+                const headerOffset = 85;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileNav = document.getElementById('mobile-nav');
+        
+        mobileMenuButton.addEventListener('click', function() {
+            const isOpen = !mobileNav.classList.contains('hidden');
+            if (isOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+        
+        function openMobileMenu() {
+            mobileNav.classList.remove('hidden');
+            mobileMenuButton.innerHTML = '<i data-lucide="x"></i>';
+            lucide.createIcons();
+        }
+        
+        function closeMobileMenu() {
+            mobileNav.classList.add('hidden');
+            mobileMenuButton.innerHTML = '<i data-lucide="menu"></i>';
+            lucide.createIcons();
+        }
+        
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 20) {
+                header.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                header.classList.remove('bg-transparent', 'py-5');
+                
+                // Update logo text color for scrolled state
+                const logoText = header.querySelector('a span');
+                if (logoText) {
+                    logoText.classList.remove('md:text-white');
+                    logoText.classList.add('text-navy-900');
+                }
+                
+                // Update nav links for scrolled state
+                const navLinks = header.querySelectorAll('nav a');
+                navLinks.forEach(link => {
+                    link.classList.remove('text-slate-200');
+                    link.classList.add('text-slate-600');
+                });
+            } else {
+                header.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-sm', 'py-3');
+                header.classList.add('bg-transparent', 'py-5');
+                
+                // Update logo text color for normal state
+                const logoText = header.querySelector('a span');
+                if (logoText) {
+                    logoText.classList.add('md:text-white');
+                    logoText.classList.remove('text-navy-900');
+                }
+                
+                // Update nav links for normal state
+                const navLinks = header.querySelectorAll('nav a');
+                navLinks.forEach(link => {
+                    link.classList.add('text-slate-200');
+                    link.classList.remove('text-slate-600');
+                });
+            }
+        });
+        
+        // Service selection functionality
+        function selectService(service) {
+            // Update the hidden input
+            document.getElementById('selected-service').value = service;
+            
+            // Update the dropdown
+            document.getElementById('service').value = service;
+            
+            // Update card styles
+            const auditCard = document.getElementById('audit-card');
+            const executionCard = document.getElementById('execution-card');
+            const retainerCard = document.getElementById('retainer-card');
+            
+            // Reset all cards
+            auditCard.className = 'cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-slate-800/50 border-slate-700 hover:border-slate-500 text-slate-300';
+            executionCard.className = 'cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-slate-800/50 border-slate-700 hover:border-slate-500 text-slate-300';
+            retainerCard.className = 'cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-slate-800/50 border-slate-700 hover:border-slate-500 text-slate-300';
+            
+            // Update icons for all cards
+            auditCard.querySelector('div:first-child div').className = 'p-3 rounded-full bg-slate-700 text-slate-400';
+            auditCard.querySelector('i:last-child').classList.add('hidden');
+            
+            executionCard.querySelector('div:first-child div').className = 'p-3 rounded-full bg-slate-700 text-slate-400';
+            executionCard.querySelector('i:last-child')?.classList.add('hidden');
+            
+            retainerCard.querySelector('div:first-child div').className = 'p-3 rounded-full bg-slate-700 text-slate-400';
+            retainerCard.querySelector('i:last-child')?.classList.add('hidden');
+            
+            // Update text colors for all cards
+            auditCard.querySelector('h3').classList.remove('text-navy-900');
+            auditCard.querySelector('h3').classList.add('text-white');
+            auditCard.querySelector('p').classList.remove('text-slate-600');
+            auditCard.querySelector('p').classList.add('text-slate-400');
+            
+            executionCard.querySelector('h3').classList.remove('text-navy-900');
+            executionCard.querySelector('h3').classList.add('text-white');
+            executionCard.querySelector('p').classList.remove('text-slate-600');
+            executionCard.querySelector('p').classList.add('text-slate-400');
+            
+            retainerCard.querySelector('h3').classList.remove('text-navy-900');
+            retainerCard.querySelector('h3').classList.add('text-white');
+            retainerCard.querySelector('p').classList.remove('text-slate-600');
+            retainerCard.querySelector('p').classList.add('text-slate-400');
+            
+            // Activate selected card
+            let selectedCard;
+            if (service.includes('Audit')) {
+                selectedCard = auditCard;
+                selectedCard.className = 'cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-white border-gold-500 shadow-xl transform -translate-y-1';
+                selectedCard.querySelector('div:first-child div').className = 'p-3 rounded-full bg-gold-100 text-gold-600';
+                selectedCard.querySelector('h3').classList.remove('text-white');
+                selectedCard.querySelector('h3').classList.add('text-navy-900');
+                selectedCard.querySelector('p').classList.remove('text-slate-400');
+                selectedCard.querySelector('p').classList.add('text-slate-600');
+                // Add check icon if it doesn't exist
+                if (!selectedCard.querySelector('i:last-child') || selectedCard.querySelector('i:last-child').getAttribute('data-lucide') !== 'check-circle') {
+                    const checkIcon = document.createElement('i');
+                    checkIcon.setAttribute('data-lucide', 'check-circle');
+                    checkIcon.className = 'text-gold-500 w-6 h-6';
+                    selectedCard.querySelector('div:first-child').appendChild(checkIcon);
+                    lucide.createIcons();
+                } else {
+                    selectedCard.querySelector('i:last-child').classList.remove('hidden');
+                }
+            } else if (service.includes('Execution')) {
+                selectedCard = executionCard;
+                selectedCard.className = 'cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-white border-blue-500 shadow-xl transform -translate-y-1';
+                selectedCard.querySelector('div:first-child div').className = 'p-3 rounded-full bg-blue-100 text-blue-600';
+                selectedCard.querySelector('h3').classList.remove('text-white');
+                selectedCard.querySelector('h3').classList.add('text-navy-900');
+                selectedCard.querySelector('p').classList.remove('text-slate-400');
+                selectedCard.querySelector('p').classList.add('text-slate-600');
+                // Add check icon if it doesn't exist
+                if (!selectedCard.querySelector('i:last-child') || selectedCard.querySelector('i:last-child').getAttribute('data-lucide') !== 'check-circle') {
+                    const checkIcon = document.createElement('i');
+                    checkIcon.setAttribute('data-lucide', 'check-circle');
+                    checkIcon.className = 'text-blue-500 w-6 h-6';
+                    selectedCard.querySelector('div:first-child').appendChild(checkIcon);
+                    lucide.createIcons();
+                } else {
+                    selectedCard.querySelector('i:last-child').classList.remove('hidden');
+                }
+            } else if (service.includes('Retainer')) {
+                selectedCard = retainerCard;
+                selectedCard.className = 'cursor-pointer p-6 rounded-xl border-2 transition-all duration-300 relative flex flex-col bg-white border-green-500 shadow-xl transform -translate-y-1';
+                selectedCard.querySelector('div:first-child div').className = 'p-3 rounded-full bg-green-100 text-green-600';
+                selectedCard.querySelector('h3').classList.remove('text-white');
+                selectedCard.querySelector('h3').classList.add('text-navy-900');
+                selectedCard.querySelector('p').classList.remove('text-slate-400');
+                selectedCard.querySelector('p').classList.add('text-slate-600');
+                // Add check icon if it doesn't exist
+                if (!selectedCard.querySelector('i:last-child') || selectedCard.querySelector('i:last-child').getAttribute('data-lucide') !== 'check-circle') {
+                    const checkIcon = document.createElement('i');
+                    checkIcon.setAttribute('data-lucide', 'check-circle');
+                    checkIcon.className = 'text-green-500 w-6 h-6';
+                    selectedCard.querySelector('div:first-child').appendChild(checkIcon);
+                    lucide.createIcons();
+                } else {
+                    selectedCard.querySelector('i:last-child').classList.remove('hidden');
+                }
+            }
+        }
+        
+        // Dropdown functionality
+        function showDropdown(id) {
+            const dropdown = document.getElementById(id + '-dropdown');
+            dropdown.classList.remove('hidden');
+            dropdown.classList.add('dropdown-enter-active');
+        }
+        
+        function hideDropdown(id) {
+            const dropdown = document.getElementById(id + '-dropdown');
+            dropdown.classList.add('hidden');
+            dropdown.classList.remove('dropdown-enter-active');
+        }
+        
+        // Tooltip functionality
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.closest('.tooltip-container')) {
+                const container = e.target.closest('.tooltip-container');
+                const tooltip = container.querySelector('.tooltip-content');
+                tooltip.classList.remove('hidden');
+            }
+        });
+        
+        document.addEventListener('mouseout', function(e) {
+            if (e.target.closest('.tooltip-container')) {
+                const container = e.target.closest('.tooltip-container');
+                const tooltip = container.querySelector('.tooltip-content');
+                tooltip.classList.add('hidden');
+            }
+        });
+        
+        // Animate efficiency bar
+        function animateEfficiencyBar() {
+            const efficiencyBar = document.getElementById('efficiency-bar');
+            const efficiencyText = document.getElementById('efficiency-text');
+            
+            if (efficiencyBar) {
+                let width = 0;
+                const targetWidth = 85;
+                const interval = setInterval(() => {
+                    if (width >= targetWidth) {
+                        clearInterval(interval);
+                    } else {
+                        width++;
+                        efficiencyBar.style.width = width + '%';
+                        efficiencyText.textContent = width + '%';
+                    }
+                }, 15);
+            }
+        }
+        
+        // Fade in elements on scroll
+        function fadeInOnScroll() {
+            const fadeElements = document.querySelectorAll('.fade-in-up');
+            
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+        
+        // Initialize animations when page loads
+        window.addEventListener('load', function() {
+            // Start efficiency bar animation after a delay
+            setTimeout(animateEfficiencyBar, 500);
+            
+            // Initial check for fade in elements
+            fadeInOnScroll();
+            
+            // Add scroll listener for fade in elements
+            window.addEventListener('scroll', fadeInOnScroll);
+        });
+        
+        // Add click handlers for all navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                smoothScrollTo(e, href);
+            });
+        });
+    </script>
+</body>
+</html>
